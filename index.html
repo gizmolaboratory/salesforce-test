@@ -590,8 +590,17 @@
         let roundComplete = false;
 
         function getQuestionsForRound() {
-            const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
-            return shuffled.slice(0, Math.min(60, shuffled.length));
+            const startIdx = (round - 1) * 60;
+            const endIdx = startIdx + 60;
+            
+            if (round <= Math.ceil(allQuestions.length / 60)) {
+                // 순차적으로 60개씩
+                return allQuestions.slice(startIdx, endIdx);
+            } else {
+                // 마지막 라운드 이후는 전체 랜덤
+                const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
+                return shuffled.slice(0, 60);
+            }
         }
 
         function startQuiz() {
@@ -676,7 +685,7 @@
                 html = `
                     <div class="quiz-screen">
                         <div class="stats-bar">
-                            <div class="stat-item">🎯 Round ${round}/3</div>
+                            <div class="stat-item">🎯 Round ${round}/${Math.ceil(allQuestions.length / 60) + 1}</div>
                             <div class="stat-item">📊 Q${currentIdx + 1}/${currentQuestions.length}</div>
                             <div class="stat-item">✅ ${correctCount}/${Object.keys(selectedAnswers).length}</div>
                         </div>
@@ -737,10 +746,13 @@
                             <div class="score-label">${correctCount} / 60 정답</div>
                         </div>
                         <div class="btn-group">
-                            ${round < 3 ? `
-                                <button class="btn" onclick="handleNextRound()">라운드 ${round + 1} 시작 →</button>
+                            ${round < Math.ceil(allQuestions.length / 60) ? `
+                                <button class="btn" onclick="handleNextRound()">라운드 ${round + 1} 시작 (${currentQuestions.length}문제) →</button>
+                            ` : round === Math.ceil(allQuestions.length / 60) ? `
+                                <button class="btn" onclick="handleNextRound()">랜덤 라운드 시작 (전체 문제) →</button>
                             ` : `
-                                <button class="btn" onclick="handleReset()">처음부터 다시 시작</button>
+                                <button class="btn" onclick="handleNextRound()">다시 랜덤 라운드</button>
+                                <button class="btn" onclick="handleReset()">처음부터</button>
                             `}
                         </div>
                     </div>
