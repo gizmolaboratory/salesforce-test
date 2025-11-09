@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salesforce Quiz</title>
     <style>
-        /* 🟪 기존 CSS 그대로 유지 (생략) */
-        /* 코드 길이 관계로 CSS는 조금 줄였습니다 (질문 주시면 전체 다 드릴게요) */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -23,7 +21,9 @@
             border-radius: 20px;
             padding: 40px;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.6s ease-out;
         }
+        h2 { font-size: 24px; color: #333; margin-bottom: 20px; }
         .btn {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
@@ -34,61 +34,100 @@
             border-radius: 10px;
             cursor: pointer;
             width: 100%;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s;
+            margin-top: 20px;
         }
-        .option { padding: 14px; border: 2px solid #ddd; cursor: pointer; }
+        .btn:hover { transform: translateY(-3px); }
+        .stats {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .stat {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .progress { height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); transition: width 0.3s; }
+        .question { margin-bottom: 20px; }
+        .q-text { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 15px; line-height: 1.5; }
+        .options { display: grid; gap: 10px; margin-bottom: 20px; }
+        .option {
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            background: white;
+            text-align: left;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        .option:hover { border-color: #667eea; background: #f8f9ff; }
         .option.sel { border-color: #667eea; background: #e8ecff; font-weight: 600; }
         .option.ok { border-color: #4caf50; background: #e8f5e9; color: #2e7d32; }
         .option.no { border-color: #f44336; background: #ffebee; color: #c62828; }
-        .msg { padding: 12px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid; }
+        .msg {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            border-left: 4px solid;
+        }
         .ok-msg { background: #e8f5e9; color: #2e7d32; border-color: #4caf50; }
         .no-msg { background: #ffebee; color: #c62828; border-color: #f44336; }
+        .score { font-size: 48px; font-weight: 900; color: #667eea; margin: 20px 0; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-    <div class="container" id="app">로딩 중...</div>
+    <div class="container" id="app">문제를 불러오는 중입니다...</div>
+
     <script>
-        let questions = []; // questions.js에서 불러올 데이터
+        let questions = []; // questions.js에서 로드되는 전역 변수
         let current = [];
         let round = 1, idx = 0, answers = {}, showing = false, done = false;
 
         async function loadQuestions() {
             try {
-                /** ⚠️ GitHub 또는 로컬 서버 기준으로 경로 작성 */
                 const res = await fetch('questions.js');
                 const text = await res.text();
-                eval(text);
+                eval(text); // const questions = [...] 로 선언된 데이터 실행
 
-                if (Array.isArray(questionsData)) {
-                    questions = questionsData;
-                } else {
-                    throw new Error('questions.js 파일에 올바른 데이터가 없습니다.');
+                if (!Array.isArray(questions)) {
+                    throw new Error('questions.js에서 questions 배열을 찾을 수 없습니다.');
                 }
+
+                console.log(`✅ 총 ${questions.length}개의 문제가 로드되었습니다.`);
                 initQuiz();
             } catch (e) {
-                console.error(e);
                 document.getElementById('app').innerHTML = `
                     <div class="card">
-                        <h2>🚨 문제를 불러오는 중 오류가 발생했습니다.</h2>
+                        <h2>🚨 문제를 불러오는 데 문제가 발생했습니다.</h2>
                         <pre>${e.message}</pre>
                     </div>`;
             }
         }
 
         function initQuiz() {
-            if (questions.length === 0) return;
-
             getQuestions();
             render();
         }
 
         function getQuestions() {
-            if (questions.length >= 60) {
-                current = [...questions]
-                    .sort(() => Math.random() - 0.5)
-                    .slice(0, 60);
-            } else {
-                current = [...questions].sort(() => Math.random() - 0.5);
-            }
+            current = [...questions].sort(() => Math.random() - 0.5).slice(0, 60);
             idx = 0;
             answers = {};
             showing = false;
@@ -98,9 +137,7 @@
         function toggle(i) {
             if (showing) return;
             const curr = answers[idx] || [];
-            answers[idx] = curr.includes(i)
-                ? curr.filter(x => x !== i)
-                : [...curr, i];
+            answers[idx] = curr.includes(i) ? curr.filter(x => x !== i) : [...curr, i];
 
             if (answers[idx].length === current[idx].ans.length) {
                 showing = true;
@@ -136,34 +173,32 @@
         }
 
         function render() {
-            if (questions.length === 0) {
-                document.getElementById('app').innerHTML = '문제를 불러오는 중입니다...';
-                return;
-            }
+            const app = document.getElementById('app');
+            if (questions.length === 0) return;
 
             const q = current[idx];
             const sel = answers[idx] || [];
             const cor = q.ans;
-            const sortedSel = sel.slice().sort();
-            const sortedCor = cor.slice().sort();
-            const correct = JSON.stringify(sortedSel) === JSON.stringify(sortedCor);
 
-            const count = Object.values(answers).filter((a, i) => {
-                const s = (a || []).slice().sort();
-                const c = (current[i]?.ans || []).slice().sort();
-                return JSON.stringify(s) === JSON.stringify(c);
-            }).length;
+            const correct = JSON.stringify(sel.slice().sort()) === JSON.stringify(cor.slice().sort());
+
+            const count = Object.values(answers).filter((a, i) => 
+                JSON.stringify((a || []).slice().sort()) === JSON.stringify((current[i]?.ans || []).slice().sort())
+            ).length;
 
             if (!done) {
-                document.getElementById('app').innerHTML = `
+                app.innerHTML = `
                     <div class="card">
                         <div class="stats">
-                            <div>🎯 Round ${round}</div>
-                            <div>${idx + 1}/${current.length}</div>
-                            <div>✅ ${count}/${Object.keys(answers).length}</div>
+                            <div class="stat">🎯 Round ${round}</div>
+                            <div class="stat">📊 Q${idx + 1}/60</div>
+                            <div class="stat">✅ ${count}/${Object.keys(answers).length}</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: ${((idx + 1) / 60) * 100}%"></div>
                         </div>
                         <div class="question">
-                            <div>${q.q}</div>
+                            <div class="q-text">${q.q}</div>
                         </div>
                         <div class="options">
                             ${q.opts.map((o, i) => {
@@ -178,27 +213,26 @@
                         ${!showing && sel.length > 0 ? `<button class="btn" onclick="submit()">답변 제출</button>` : ''}
                         ${showing ? `
                             <div class="msg ${correct ? 'ok-msg' : 'no-msg'}">
-                                ${correct ? '✓ 정답입니다!' : `✗ 틀렸습니다 (정답: ${cor.map(i => q.opts[i]).join(', ')})`}
+                                ${correct ? '✓ 정답입니다!' : `✗ 오답입니다 (정답: ${cor.map(i => q.opts[i]).join(', ')})`}
                             </div>
-                            <button class="btn" onclick="next()">${idx < current.length - 1 ? '다음' : '결과 보기'}</button>
+                            <button class="btn" onclick="next()">${idx < 59 ? '다음' : '결과 보기'}</button>
                         ` : ''}
                     </div>
                 `;
             } else {
-                const pct = Math.round((count / current.length) * 100);
-                document.getElementById('app').innerHTML = `
-                    <div class="card" style="text-align:center">
+                const pct = Math.round((count / 60) * 100);
+                app.innerHTML = `
+                    <div class="card" style="text-align: center;">
                         <h2>🎉 라운드 ${round} 완료!</h2>
-                        <div style="font-size: 48px;">${pct}%</div>
-                        <div>${count} / ${current.length} 정답</div>
-                        <button class="btn" onclick="nextRound()">다음 라운드</button>
-                        <button class="btn" onclick="restart()">처음부터 시작</button>
+                        <div class="score">${pct}%</div>
+                        <div style="font-size: 16px; color: #666; margin-bottom: 30px;">${count} / 60 정답</div>
+                        <button class="btn" onclick="nextRound()" style="margin-bottom: 10px;">다음 라운드</button>
+                        <button class="btn" onclick="restart()">처음부터</button>
                     </div>
                 `;
             }
         }
 
-        // 🔥 초기 진입 시 문제를 불러옴
         loadQuestions();
     </script>
 </body>
