@@ -200,12 +200,12 @@
                     </div>
                 `;
             } else {
-                const pct = Math.round((count / current.length) * 100);
+                const pct = Math.round((count / 60) * 100);
                 document.getElementById('app').innerHTML = `
                     <div class="card" style="text-align: center;">
                         <h2 style="margin-bottom: 30px;">🎉 라운드 ${round} 완료!</h2>
                         <div class="score">${pct}%</div>
-                        <div style="font-size: 16px; color: #666; margin-bottom: 30px;">${count} / ${current.length} 정답</div>
+                        <div style="font-size: 16px; color: #666; margin-bottom: 30px;">${count} / 60 정답</div>
                         <button class="btn" onclick="nextRound()" style="margin-bottom: 10px;">다음 라운드</button>
                         <button class="btn" onclick="restart()">처음부터</button>
                     </div>
