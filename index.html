@@ -107,10 +107,9 @@
         let current = [];
 
         function getQuestions() {
-            const start = (round - 1) * 60;
-            const end = start + 60;
-            if (start < questions.length) {
-                current = questions.slice(start, end);
+            // 60개씩 뽑기 (부족하면 랜덤으로 섞어서 60개)
+            if (questions.length >= 60) {
+                current = questions.slice(0, 60);
             } else {
                 current = [...questions].sort(() => Math.random() - 0.5).slice(0, 60);
             }
@@ -124,6 +123,12 @@
             if (showing) return;
             const curr = answers[idx] || [];
             answers[idx] = curr.includes(i) ? curr.filter(x => x !== i) : [...curr, i];
+            
+            // 정답 개수만큼 선택되면 자동으로 결과 표시
+            const q = current[idx];
+            if (answers[idx].length === q.ans.length) {
+                showing = true;
+            }
             render();
         }
 
