@@ -1,0 +1,247 @@
+import React, { useState, useEffect } from 'react';
+
+const SalesforceQuiz = () => {
+  const allQuestions = [
+    { id: 1, q: "A Sales user is trying to manage Campaign Members. How can an administrator troubleshoot this problem?", opts: ["Create a permission set", "Provide access to Leads and Contacts", "Check Marketing User Checkbox", "Run a Campaign report"], ans: [2] },
+    { id: 2, q: "What will happen to data when a custom field is deleted?", opts: ["Stored for 20 days", "Permanently deleted", "Data is required", "Restorable from recycle bin"], ans: [0] },
+    { id: 3, q: "Which two steps should troubleshoot field unavailability?", opts: ["Update page layout", "Run setup audit trail", "Update org-wide default", "Review field level security"], ans: [0, 3] },
+    { id: 4, q: "How to help team collaborate?", opts: ["Use Quick Actions", "Configure Public Group", "Create Private Group", "Add Activity History"], ans: [2] },
+    { id: 5, q: "Which feature requires users to follow status path?", opts: ["Predefined Field Values", "Global Picklists", "Dependent Picklists", "Validation Rules"], ans: [3] },
+  ];
+
+  const [state, setState] = useState('start'); // start, quiz, results
+  const [round, setRound] = useState(1);
+  const [currentQuestions, setCurrentQuestions] = useState([]);
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [selectedAnswers, setSelectedAnswers] = useState({});
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [totalCorrect, setTotalCorrect] = useState(0);
+
+  // 라운드 시작
+  const startQuiz = () => {
+    const shuffled = [...allQuestions].sort(() => Math.random() - 0.5).slice(0, 5);
+    setCurrentQuestions(shuffled);
+    setState('quiz');
+    setCurrentIdx(0);
+    setSelectedAnswers({});
+    setShowAnswer(false);
+    setCorrectCount(0);
+  };
+
+  // 답변 선택
+  const handleSelectAnswer = (optIdx) => {
+    if (showAnswer) return;
+    
+    const key = currentIdx;
+    const current = selectedAnswers[key] || [];
+    let updated;
+
+    if (current.includes(optIdx)) {
+      updated = current.filter(idx => idx !== optIdx);
+    } else {
+      updated = [...current, optIdx];
+    }
+
+    setSelectedAnswers({ ...selectedAnswers, [key]: updated });
+  };
+
+  // 답변 제출
+  const handleSubmit = () => {
+    const key = currentIdx;
+    const selected = (selectedAnswers[key] || []).sort((a, b) => a - b);
+    const correct = (currentQuestions[key]?.ans || []).sort((a, b) => a - b);
+    
+    if (JSON.stringify(selected) === JSON.stringify(correct)) {
+      setCorrectCount(correctCount + 1);
+    }
+    
+    setShowAnswer(true);
+  };
+
+  // 다음 문제
+  const handleNext = () => {
+    if (currentIdx < currentQuestions.length - 1) {
+      setCurrentIdx(currentIdx + 1);
+      setShowAnswer(false);
+    } else {
+      // 라운드 완료
+      setState('results');
+      setTotalCorrect(totalCorrect + correctCount);
+    }
+  };
+
+  // 다음 라운드
+  const handleNextRound = () => {
+    if (round < 3) {
+      setRound(round + 1);
+      startQuiz();
+    }
+  };
+
+  // 처음부터
+  const handleRestart = () => {
+    setState('start');
+    setRound(1);
+    setTotalCorrect(0);
+    setCorrectCount(0);
+    setSelectedAnswers({});
+  };
+
+  const question = currentQuestions[currentIdx];
+  const selected = selectedAnswers[currentIdx] || [];
+  const correct = question?.ans || [];
+  const isCorrect = JSON.stringify([...selected].sort((a, b) => a - b)) === JSON.stringify([...correct].sort((a, b) => a - b));
+
+  // 시작 화면
+  if (state === 'start') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
+          <h1 className="text-4xl font-bold text-gray-800 mb-2">Salesforce</h1>
+          <h2 className="text-2xl font-semibold text-blue-600 mb-4">Administrator Quiz</h2>
+          <p className="text-gray-600 mb-2">248개 문제 학습</p>
+          <p className="text-sm text-gray-500 mb-8">60개씩 3라운드로 진행됩니다</p>
+          <button 
+            onClick={startQuiz}
+            className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition"
+          >
+            시작하기 →
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // 결과 화면
+  if (state === 'results') {
+    const percentage = Math.round((correctCount / currentQuestions.length) * 100);
+    const allDone = round === 3;
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-600 to-teal-600 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
+          <div className="text-6xl mb-4">{percentage >= 80 ? '🎉' : percentage >= 60 ? '👍' : '💪'}</div>
+          <h2 className="text-3xl font-bold text-gray-800 mb-2">Round {round} 완료!</h2>
+          <div className="bg-blue-50 rounded-lg p-4 mb-6">
+            <p className="text-5xl font-bold text-blue-600">{percentage}%</p>
+            <p className="text-gray-600 mt-2">{correctCount} / {currentQuestions.length}개 정답</p>
+          </div>
+
+          {!allDone && (
+            <div className="bg-purple-50 rounded-lg p-3 mb-6">
+              <p className="text-sm text-gray-600">누적 점수</p>
+              <p className="text-2xl font-bold text-purple-600">{totalCorrect + correctCount} / {5 * round}</p>
+            </div>
+          )}
+
+          {allDone && (
+            <div className="bg-green-50 rounded-lg p-4 mb-6">
+              <p className="text-lg font-bold text-green-700">🏆 모든 라운드 완료!</p>
+              <p className="text-3xl font-bold text-green-600 mt-2">{Math.round(((totalCorrect + correctCount) / (5 * 3)) * 100)}%</p>
+            </div>
+          )}
+
+          {!allDone ? (
+            <button 
+              onClick={handleNextRound}
+              className="w-full bg-green-600 text-white py-3 rounded-lg font-bold hover:bg-green-700 transition"
+            >
+              Round {round + 1} 시작하기
+            </button>
+          ) : (
+            <button 
+              onClick={handleRestart}
+              className="w-full bg-purple-600 text-white py-3 rounded-lg font-bold hover:bg-purple-700 transition"
+            >
+              처음부터 다시
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // 퀴즈 화면
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-600 to-blue-600 p-4">
+      <div className="max-w-2xl mx-auto">
+        {/* 진행률 */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <span className="text-sm font-semibold text-gray-600">Round {round} - Q {currentIdx + 1}/{currentQuestions.length}</span>
+            <span className="text-sm font-semibold text-green-600">정답: {correctCount}</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-green-500 h-2 rounded-full transition-all"
+              style={{width: `${((currentIdx + 1) / currentQuestions.length) * 100}%`}}
+            />
+          </div>
+        </div>
+
+        {/* 문제 카드 */}
+        <div className="bg-white rounded-lg shadow-lg p-8 mb-6">
+          <h3 className="text-lg font-bold text-gray-800 mb-6">{question?.q}</h3>
+
+          {/* 선택지 */}
+          <div className="space-y-3 mb-6">
+            {question?.opts.map((opt, idx) => (
+              <button
+                key={idx}
+                onClick={() => handleSelectAnswer(idx)}
+                disabled={showAnswer}
+                className={`w-full p-4 text-left rounded-lg font-semibold transition ${
+                  showAnswer
+                    ? correct.includes(idx)
+                      ? 'bg-green-100 border-2 border-green-500 text-green-800'
+                      : selected.includes(idx)
+                      ? 'bg-red-100 border-2 border-red-500 text-red-800'
+                      : 'bg-gray-100 text-gray-600'
+                    : selected.includes(idx)
+                    ? 'bg-blue-100 border-2 border-blue-500 text-gray-800 cursor-pointer'
+                    : 'bg-blue-50 border-2 border-blue-200 text-gray-800 hover:bg-blue-100 cursor-pointer'
+                }`}
+              >
+                <span className="text-sm">{String.fromCharCode(65 + idx)}.</span> {opt}
+              </button>
+            ))}
+          </div>
+
+          {/* 버튼 */}
+          {!showAnswer && selected.length > 0 && (
+            <button
+              onClick={handleSubmit}
+              className="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition"
+            >
+              답변 제출
+            </button>
+          )}
+
+          {showAnswer && (
+            <>
+              <div className={`p-4 rounded-lg mb-6 ${isCorrect ? 'bg-green-50 border-l-4 border-green-500' : 'bg-red-50 border-l-4 border-red-500'}`}>
+                <p className={`font-bold ${isCorrect ? 'text-green-900' : 'text-red-900'}`}>
+                  {isCorrect ? '✓ 정답입니다!' : '✗ 틀렸습니다'}
+                </p>
+                {!isCorrect && (
+                  <p className="text-sm mt-2 text-gray-800">
+                    정답: {correct.map(i => `${String.fromCharCode(65 + i)}`).join(', ')}
+                  </p>
+                )}
+              </div>
+              <button
+                onClick={handleNext}
+                className="w-full bg-green-600 text-white py-3 rounded-lg font-bold hover:bg-green-700 transition"
+              >
+                {currentIdx === currentQuestions.length - 1 ? '결과보기' : '다음 문제'} →
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SalesforceQuiz;
