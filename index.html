@@ -101,34 +101,8 @@
 </head>
 <body>
     <div class="container" id="app"></div>
+    <script src="questions.js"></script>
     <script>
-        let questions = [];
-        let round = 1, idx = 0, answers = {}, showing = false, done = false;
-        let current = [];
-
-        // 외부 JSON 파일 로드 (GitHub Pages 호환)
-        async function loadQuestions() {
-            try {
-                const response = await fetch('./questions.json');
-                if (!response.ok) throw new Error('File not found');
-                questions = await response.json();
-                getQuestions();
-                render();
-            } catch (error) {
-                document.getElementById('app').innerHTML = `
-                    <div class="card" style="text-align: center;">
-                        <h2 style="color: #f44336;">⚠️ 오류</h2>
-                        <p style="color: #666; margin-top: 20px;">questions.json 파일을 찾을 수 없습니다.</p>
-                        <p style="color: #999; font-size: 14px; margin-top: 10px;">
-                            GitHub 저장소에 questions.json 파일이 같은 폴더에 있는지 확인해주세요.
-                        </p>
-                        <p style="color: #999; font-size: 13px; margin-top: 10px;">
-                            에러: ${error.message}
-                        </p>
-                    </div>
-                `;
-            }
-        }
 
         function getQuestions() {
             const start = (round - 1) * 60;
@@ -237,8 +211,12 @@
             }
         }
 
-        // 페이지 로드 시 questions.json 파일 로드
-        loadQuestions();
+        let round = 1, idx = 0, answers = {}, showing = false, done = false;
+        let current = [];
+
+        // questions.js 로드 후 시작
+        getQuestions();
+        render();
     </script>
 </body>
 </html>
