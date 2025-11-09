@@ -3,14 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salesforce Administrator Quiz</title>
+    <title>Salesforce Quiz</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -20,319 +15,94 @@
             justify-content: center;
             padding: 20px;
         }
-
-        .container {
-            max-width: 900px;
-            width: 100%;
-        }
-
-        .menu-screen {
+        .container { max-width: 900px; width: 100%; }
+        .card {
             background: white;
             border-radius: 20px;
-            padding: 80px 40px;
-            text-align: center;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
             animation: slideUp 0.6s ease-out;
         }
-
-        .menu-screen h1 {
-            font-size: 56px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        h1 {
+            font-size: 48px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
-            letter-spacing: -1px;
         }
-
-        .menu-screen h2 {
-            font-size: 28px;
-            color: #333;
-            margin-bottom: 30px;
-            font-weight: 600;
-        }
-
-        .subtitle-text {
-            color: #666;
-            font-size: 16px;
-            margin-bottom: 10px;
-            line-height: 1.6;
-        }
-
-        .subtitle-small {
-            color: #999;
-            font-size: 14px;
-            margin-bottom: 40px;
-        }
-
+        h2 { font-size: 24px; color: #333; margin-bottom: 20px; }
         .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
-            padding: 16px 40px;
+            padding: 14px 28px;
             font-size: 16px;
             font-weight: 600;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.3s ease;
             width: 100%;
             box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s;
         }
-
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
-        }
-
-        .quiz-screen {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-            animation: slideUp 0.6s ease-out;
-        }
-
-        .stats-bar {
+        .btn:hover { transform: translateY(-3px); }
+        .stats {
             display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 10px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
-            justify-content: space-around;
         }
-
-        .stat-item {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .stat {
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            padding: 12px 20px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
-        }
-
-        .progress-section {
-            margin-bottom: 30px;
-        }
-
-        .progress-info {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 14px;
-            color: #666;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 13px;
             font-weight: 600;
         }
-
         .progress-bar {
             width: 100%;
-            height: 8px;
+            height: 6px;
             background: #e0e0e0;
             border-radius: 10px;
+            margin-bottom: 20px;
             overflow: hidden;
         }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            transition: width 0.3s ease;
-        }
-
-        .question-section {
-            margin-bottom: 30px;
-        }
-
-        .question-text {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 10px;
-            line-height: 1.6;
-        }
-
-        .question-id {
-            font-size: 12px;
-            color: #999;
-            margin-bottom: 20px;
-        }
-
-        .options {
-            display: grid;
-            gap: 12px;
-            margin-bottom: 30px;
-        }
-
+        .progress { height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); transition: width 0.3s; }
+        .question { margin-bottom: 20px; }
+        .q-text { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 15px; line-height: 1.5; }
+        .options { display: grid; gap: 10px; margin-bottom: 20px; }
         .option {
-            padding: 16px;
+            padding: 14px;
             border: 2px solid #ddd;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             background: white;
-            font-size: 15px;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
+            text-align: left;
+            transition: all 0.2s;
+            font-size: 14px;
         }
-
-        .option:hover {
-            border-color: #667eea;
-            background: #f8f9ff;
-            transform: translateX(4px);
-        }
-
-        .option.selected {
-            border-color: #667eea;
-            background: #e8ecff;
-            font-weight: 600;
-        }
-
-        .option.correct {
-            border-color: #4caf50;
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .option.incorrect {
-            border-color: #f44336;
-            background: #ffebee;
-            color: #c62828;
-        }
-
-        .checkbox {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #ddd;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            margin-top: 2px;
-            transition: all 0.2s ease;
-        }
-
-        .option.selected .checkbox {
-            background: #667eea;
-            border-color: #667eea;
-            color: white;
-            font-weight: bold;
-            font-size: 12px;
-        }
-
-        .feedback {
-            padding: 16px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+        .option:hover { border-color: #667eea; background: #f8f9ff; }
+        .option.sel { border-color: #667eea; background: #e8ecff; font-weight: 600; }
+        .option.ok { border-color: #4caf50; background: #e8f5e9; color: #2e7d32; }
+        .option.no { border-color: #f44336; background: #ffebee; color: #c62828; }
+        .msg {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
             font-weight: 600;
             border-left: 4px solid;
         }
-
-        .feedback.correct {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border-color: #4caf50;
-        }
-
-        .feedback.incorrect {
-            background: #ffebee;
-            color: #c62828;
-            border-color: #f44336;
-        }
-
-        .feedback-answer {
-            margin-top: 8px;
-            font-size: 13px;
-            opacity: 0.9;
-        }
-
-        .results-screen {
-            background: white;
-            border-radius: 20px;
-            padding: 60px 40px;
-            text-align: center;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-            animation: slideUp 0.6s ease-out;
-        }
-
-        .emoji {
-            font-size: 80px;
-            margin-bottom: 20px;
-        }
-
-        .results-screen h2 {
-            font-size: 32px;
-            color: #333;
-            margin-bottom: 30px;
-            font-weight: 700;
-        }
-
-        .score-display {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
-        }
-
-        .big-number {
-            font-size: 60px;
-            font-weight: 900;
-            margin-bottom: 10px;
-        }
-
-        .score-label {
-            font-size: 16px;
-            opacity: 0.9;
-        }
-
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (max-width: 600px) {
-            .menu-screen {
-                padding: 50px 25px;
-            }
-
-            .menu-screen h1 {
-                font-size: 40px;
-            }
-
-            .quiz-screen, .results-screen {
-                padding: 25px;
-            }
-
-            .question-text {
-                font-size: 16px;
-            }
-
-            .stats-bar {
-                flex-direction: column;
-            }
-        }
+        .ok-msg { background: #e8f5e9; color: #2e7d32; border-color: #4caf50; }
+        .no-msg { background: #ffebee; color: #c62828; border-color: #f44336; }
+        .score { font-size: 48px; font-weight: 900; color: #667eea; margin: 20px 0; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-    <div class="container" id="root"></div>
-
+    <div class="container" id="app"></div>
     <script>
-        // 샘플 문제들 - 248개를 여기에 모두 넣으세요
-        const allQuestions = [
-            { id: 1, q: "A Sales user is trying to manage Campaign Members for an upcoming networking event. The user can view the Campaign, but cannot add new Campaign Members or update Member statuses. How can an administrator troubleshoot this problem?", opts: ["Create a permission set to allow the user to edit Campaign Members.", "Provide the user access to both Leads and Contacts to edit all Members.", "Make sure the Marketing User Checkbox is checked on the user record page.", "Run a Campaign report and update any Member information via Data Loader."], ans: [2] },
+        const questions = [
+            { id: 1, q: "A Sales user is trying to manage Campaign Members for an upcoming networking event. The user can view the Campaign, but add new Campaign Members or update Member statuses. How can an administrator troubleshoot this problem?", opts: ["Create a permission set to allow the user to edit Campaign Members.", "Provide the user access to both Leads and Contacts to edit all Members.", "Make sure the Marketing User Checkbox is checked on the user record page.", "Run a Campaign report and update any Member information via Data Loader."], ans: [2] },
             { id: 2, q: "Cloud Kicks has decided to delete a custom field. What will happen to the data in the field when it is deleted?", opts: ["The data in the field is stored for 20 days.", "The data is permanently deleted.", "The data associated with the field is required.", "The data is restorable from the recycle bin."], ans: [0] },
             { id: 3, q: "The administrator at Cloud Kicks created a new field for tracking returns on their new cloud shoe. A user has submitted case to the administrator indication that the new field is unavailable. Which two steps should an administrator do to troubleshoot this issue?", opts: ["Ensure that the page layout for the user's profile has been updated.", "Run the setup audit trail for the organization.", "Update the organization wide default for the object.", "Review the field level security of the field for the user profile"], ans: [0, 3] },
             { id: 4, q: "Cloud Kicks has a team of product owners that need a space to share feedback and ideas with just the product team. How should the administrator leverage Salesforce to help the team collaborate?", opts: ["UseQuick Actions to log communication.", "Configure a Chatter Public Group.", "Create a Chatter Private Group.", "Add Activity History to document tasks."], ans: [2] },
@@ -582,196 +352,118 @@
             { id: 248, q: "Northern Trail Outfitters has the Case Object set to private. The support manager raised a concern the reps have a boarder view of data than expected and can see all cases on their groups dashboards. What could be causing reps to have inappropriate access to data on dashboards?", opts: ["Dashboard Filters", "Dashboard Subscriptions", "Dynamic Dashboards", "Public Dashboards."], ans: [2] }
         ];
 
-        let round = 1;
-        let currentQuestions = [];
-        let currentIdx = 0;
-        let selectedAnswers = {};
-        let showingAnswer = false;
-        let roundComplete = false;
+        let round = 1, idx = 0, answers = {}, showing = false, done = false;
+        let current = [];
 
-        function getQuestionsForRound() {
-            const startIdx = (round - 1) * 60;
-            const endIdx = startIdx + 60;
-            
-            if (round <= Math.ceil(allQuestions.length / 60)) {
-                // 순차적으로 60개씩
-                return allQuestions.slice(startIdx, endIdx);
+        function getQuestions() {
+            const start = (round - 1) * 60;
+            const end = start + 60;
+            if (start < questions.length) {
+                current = questions.slice(start, end);
             } else {
-                // 마지막 라운드 이후는 전체 랜덤
-                const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
-                return shuffled.slice(0, 60);
+                current = [...questions].sort(() => Math.random() - 0.5).slice(0, 60);
             }
+            idx = 0;
+            answers = {};
+            showing = false;
+            done = false;
         }
 
-        function startQuiz() {
-            round = 1;
-            currentQuestions = getQuestionsForRound();
-            currentIdx = 0;
-            selectedAnswers = {};
-            showingAnswer = false;
-            roundComplete = false;
+        function toggle(i) {
+            if (showing) return;
+            const curr = answers[idx] || [];
+            answers[idx] = curr.includes(i) ? curr.filter(x => x !== i) : [...curr, i];
             render();
         }
 
-        function handleAnswerToggle(optIdx) {
-            if (showingAnswer) return;
-            const current = selectedAnswers[currentIdx] || [];
-            if (current.includes(optIdx)) {
-                selectedAnswers[currentIdx] = current.filter(i => i !== optIdx);
+        function submit() {
+            showing = true;
+            render();
+        }
+
+        function next() {
+            if (idx < current.length - 1) {
+                idx++;
+                showing = false;
             } else {
-                selectedAnswers[currentIdx] = [...current, optIdx];
+                done = true;
             }
             render();
         }
 
-        function handleSubmit() {
-            showingAnswer = true;
-            render();
-        }
-
-        function handleNext() {
-            if (currentIdx < currentQuestions.length - 1) {
-                currentIdx++;
-                showingAnswer = false;
-            } else {
-                roundComplete = true;
-            }
-            render();
-        }
-
-        function handleNextRound() {
+        function nextRound() {
             round++;
-            currentQuestions = getQuestionsForRound();
-            currentIdx = 0;
-            selectedAnswers = {};
-            showingAnswer = false;
-            roundComplete = false;
+            getQuestions();
             render();
         }
 
-        function handleReset() {
-            startQuiz();
-        }
-
-        function getCurrentQuestion() {
-            return currentQuestions[currentIdx];
-        }
-
-        function getCorrectCount() {
-            return Object.keys(selectedAnswers).filter(i => {
-                const sel = (selectedAnswers[i] || []).sort((a, b) => a - b);
-                const cor = (currentQuestions[i]?.ans || []).sort((a, b) => a - b);
-                return JSON.stringify(sel) === JSON.stringify(cor);
-            }).length;
-        }
-
-        function isAnswerCorrect() {
-            const q = getCurrentQuestion();
-            const selected = (selectedAnswers[currentIdx] || []).sort((a, b) => a - b);
-            const correct = (q?.ans || []).sort((a, b) => a - b);
-            return JSON.stringify(selected) === JSON.stringify(correct);
+        function restart() {
+            round = 1;
+            getQuestions();
+            render();
         }
 
         function render() {
-            const q = getCurrentQuestion();
-            const currentAnswers = selectedAnswers[currentIdx] || [];
-            const correctAnswers = q?.ans || [];
-            const correctCount = getCorrectCount();
-            const isCorrect = isAnswerCorrect();
+            const q = current[idx];
+            const sel = answers[idx] || [];
+            const cor = q.ans;
+            const correct = sel.sort((a, b) => a - b).every((v, i) => v === cor.sort((a, b) => a - b)[i]) && sel.length === cor.length;
+            const count = Object.values(answers).filter((a, i) => {
+                const s = (a || []).sort((a, b) => a - b);
+                const c = (current[i]?.ans || []).sort((a, b) => a - b);
+                return JSON.stringify(s) === JSON.stringify(c);
+            }).length;
 
-            let html = '';
-
-            if (!roundComplete) {
-                html = `
-                    <div class="quiz-screen">
-                        <div class="stats-bar">
-                            <div class="stat-item">🎯 Round ${round}/${Math.ceil(allQuestions.length / 60) + 1}</div>
-                            <div class="stat-item">📊 Q${currentIdx + 1}/${currentQuestions.length}</div>
-                            <div class="stat-item">✅ ${correctCount}/${Object.keys(selectedAnswers).length}</div>
+            if (!done) {
+                document.getElementById('app').innerHTML = `
+                    <div class="card">
+                        <div class="stats">
+                            <div class="stat">🎯 Round ${round}</div>
+                            <div class="stat">📊 Q${idx + 1}/${current.length}</div>
+                            <div class="stat">✅ ${count}/${Object.keys(answers).length}</div>
                         </div>
-
-                        <div class="progress-section">
-                            <div class="progress-info">
-                                <span>Progress</span>
-                                <span>${Math.round(((currentIdx + 1) / currentQuestions.length) * 100)}%</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: ${((currentIdx + 1) / currentQuestions.length) * 100}%"></div>
-                            </div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: ${((idx + 1) / current.length) * 100}%"></div>
                         </div>
-
-                        <div class="question-section">
-                            <div class="question-text">${q?.q}</div>
-                            <div class="question-id">📋 문제 NO.${q?.id}</div>
+                        <div class="question">
+                            <div class="q-text">${q.q}</div>
+                            <div style="font-size: 11px; color: #999;">문제 NO.${q.id}</div>
                         </div>
-
                         <div class="options">
-                            ${q?.opts.map((opt, i) => {
-                                let className = 'option';
-                                if (showingAnswer) {
-                                    if (correctAnswers.includes(i)) className += ' correct';
-                                    else if (currentAnswers.includes(i)) className += ' incorrect';
-                                } else if (currentAnswers.includes(i)) {
-                                    className += ' selected';
-                                }
-                                return `
-                                    <button onclick="handleAnswerToggle(${i})" class="${className}">
-                                        <div class="checkbox">${currentAnswers.includes(i) ? '✓' : ''}</div>
-                                        <span>${opt}</span>
-                                    </button>
-                                `;
+                            ${q.opts.map((o, i) => {
+                                let cl = 'option';
+                                if (showing) {
+                                    if (cor.includes(i)) cl += ' ok';
+                                    else if (sel.includes(i)) cl += ' no';
+                                } else if (sel.includes(i)) cl += ' sel';
+                                return `<button class="${cl}" onclick="toggle(${i})">${o}</button>`;
                             }).join('')}
                         </div>
-
-                        ${!showingAnswer && currentAnswers.length > 0 ? `<button class="btn" onclick="handleSubmit()">답변 제출</button>` : ''}
-
-                        ${showingAnswer ? `
-                            <div class="feedback ${isCorrect ? 'correct' : 'incorrect'}">
-                                ${isCorrect ? '✓ 정답입니다!' : '✗ 틀렸습니다'}
-                                ${!isCorrect ? `<div class="feedback-answer">정답: ${correctAnswers.map(i => q?.opts[i]).join(', ')}</div>` : ''}
+                        ${!showing && sel.length > 0 ? `<button class="btn" onclick="submit()">답변 제출</button>` : ''}
+                        ${showing ? `
+                            <div class="msg ${correct ? 'ok-msg' : 'no-msg'}">
+                                ${correct ? '✓ 정답입니다!' : `✗ 틀렸습니다 (정답: ${cor.map(i => q.opts[i]).join(', ')})`}
                             </div>
-                            <button class="btn" onclick="handleNext()">${currentIdx < currentQuestions.length - 1 ? '다음 문제' : '라운드 완료'}</button>
+                            <button class="btn" onclick="next()">${idx < current.length - 1 ? '다음' : '결과'}</button>
                         ` : ''}
                     </div>
                 `;
             } else {
-                const percentage = Math.round((correctCount / 60) * 100);
-                const emoji = percentage >= 80 ? '🎉' : percentage >= 60 ? '👍' : '💪';
-                html = `
-                    <div class="results-screen">
-                        <div class="emoji">${emoji}</div>
-                        <h2>라운드 ${round} 완료!</h2>
-                        <div class="score-display">
-                            <div class="big-number">${percentage}%</div>
-                            <div class="score-label">${correctCount} / 60 정답</div>
-                        </div>
-                        <div class="btn-group">
-                            ${round < Math.ceil(allQuestions.length / 60) ? `
-                                <button class="btn" onclick="handleNextRound()">라운드 ${round + 1} 시작 (${currentQuestions.length}문제) →</button>
-                            ` : round === Math.ceil(allQuestions.length / 60) ? `
-                                <button class="btn" onclick="handleNextRound()">랜덤 라운드 시작 (전체 문제) →</button>
-                            ` : `
-                                <button class="btn" onclick="handleNextRound()">다시 랜덤 라운드</button>
-                                <button class="btn" onclick="handleReset()">처음부터</button>
-                            `}
-                        </div>
+                const pct = Math.round((count / 60) * 100);
+                document.getElementById('app').innerHTML = `
+                    <div class="card" style="text-align: center;">
+                        <h2 style="margin-bottom: 30px;">🎉 라운드 ${round} 완료!</h2>
+                        <div class="score">${pct}%</div>
+                        <div style="font-size: 16px; color: #666; margin-bottom: 30px;">${count} / 60 정답</div>
+                        <button class="btn" onclick="nextRound()" style="margin-bottom: 10px;">다음 라운드</button>
+                        <button class="btn" onclick="restart()">처음부터</button>
                     </div>
                 `;
             }
-
-            document.getElementById('root').innerHTML = html;
         }
 
-        // 초기 렌더링
-        document.getElementById('root').innerHTML = `
-            <div class="menu-screen">
-                <h1>Salesforce</h1>
-                <h2>Administrator Quiz</h2>
-                <div class="subtitle-text">248개 시험 문제로 인증 준비</div>
-                <div class="subtitle-small">60개씩 3라운드 진행 • 실제 시험 수준</div>
-                <button class="btn" onclick="startQuiz()">시작하기 →</button>
-            </div>
-        `;
+        getQuestions();
+        render();
     </script>
 </body>
 </html>
